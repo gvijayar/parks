@@ -1,4 +1,4 @@
-package org.openshift.data.model;
+package org.openshift.data.seed;
 
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -6,8 +6,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
-import org.openshift.data.postgres.ConnectionManager;
-import org.openshift.data.postgres.DataManager;
+import org.openshift.data.dbutilities.ConnectionManager;
+import org.openshift.data.model.ParkData;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

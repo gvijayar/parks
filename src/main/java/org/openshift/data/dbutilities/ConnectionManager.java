@@ -1,4 +1,4 @@
-package org.openshift.data.postgres;
+package org.openshift.data.dbutilities;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

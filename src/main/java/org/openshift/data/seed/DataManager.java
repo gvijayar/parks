@@ -1,4 +1,4 @@
-package org.openshift.data.postgres;
+package org.openshift.data.seed;
 
 public class DataManager {
 
