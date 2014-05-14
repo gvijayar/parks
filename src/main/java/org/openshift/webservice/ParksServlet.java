@@ -17,6 +17,8 @@ import javax.sql.DataSource;
 
 import org.openshift.data.mongo.DBConnection;
 import org.openshift.data.postgres.DataManager;
+import org.openshift.model.DataLoader;
+import org.openshift.model.ParkData;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
@@ -93,28 +95,31 @@ public class ParksServlet extends HttpServlet {
 				PreparedStatement extension = con.prepareStatement(new DataManager().installGisExtensions());
 				extension.executeUpdate();
 			}catch(Exception e){
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			try{
 				PreparedStatement statement = con.prepareStatement(new DataManager().initializeDatabase());
 				statement.executeUpdate();				
 			}catch (Exception e){
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			try{
+				DataLoader myParkLoader = new DataLoader();
+				ArrayList<ParkData> myParkData = myParkLoader.getAllParksData();
 				PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
-				
-				insertstatement.setString(1, "Guna");
-				insertstatement.setString(2, "POINT(" + -85.7302 + " " + 37.5332 + ")");
-				insertstatement.executeUpdate();				
+
+				for (int i=0; i<myParkData.size(); i++){
+					insertstatement.setString(1, myParkData.get(i).getName());
+					insertstatement.setString(2, "POINT(" + myParkData.get(i).getPos()[0] + " " + myParkData.get(i).getPos()[1] + ")");
+					insertstatement.executeUpdate();						
+				}
+			
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-			
-			con.commit();
-			
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
