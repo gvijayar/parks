@@ -88,19 +88,31 @@ public class ParksServlet extends HttpServlet {
 	public void setUpDatabase(HttpServletRequest request, HttpServletResponse response){
 		try {
 			Connection con = ds.getConnection();
-
-			PreparedStatement extension = con.prepareStatement(new DataManager().installGisExtensions());
-			extension.executeUpdate();
 			
-			PreparedStatement statement = con.prepareStatement(new DataManager().initializeDatabase());
-			statement.executeUpdate();
+			try{
+				PreparedStatement extension = con.prepareStatement(new DataManager().installGisExtensions());
+				extension.executeUpdate();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			
-			PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
+			try{
+				PreparedStatement statement = con.prepareStatement(new DataManager().initializeDatabase());
+				statement.executeUpdate();				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 			
-			insertstatement.setString(1, "Guna");
-			insertstatement.setDouble(2, -85.7302);
-			insertstatement.setDouble(3, 37.5332);
-			insertstatement.executeUpdate();
+			try{
+				PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
+				
+				insertstatement.setString(1, "Guna");
+				insertstatement.setDouble(2, -85.7302);
+				insertstatement.setDouble(3, 37.5332);
+				insertstatement.executeUpdate();				
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 			
 			con.commit();
 			
