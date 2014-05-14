@@ -2,23 +2,16 @@ package org.openshift.webservice;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 
 import org.openshift.data.mongo.DBConnection;
-import org.openshift.data.postgres.DataManager;
-import org.openshift.model.DataLoader;
-import org.openshift.model.ParkData;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
@@ -30,30 +23,24 @@ import com.mongodb.DBObject;
 @WebServlet("/parks")
 public class ParksServlet extends HttpServlet {
 
-	@Resource(name = "jdbc/PostgreSQLDS")
-	DataSource ds;
-	
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//findParksWithin(request, response);
-		setUpDatabase(request, response);
+		findParksWithin(request, response);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//findParksWithin(request, response);	
-		setUpDatabase(request, response);
+		findParksWithin(request, response);	
 	}
 
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {		
-		//findParksWithin(request, response);
-		setUpDatabase(request, response);
+		findParksWithin(request, response);
 	}
 	
 	public String getAllParks(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -85,45 +72,6 @@ public class ParksServlet extends HttpServlet {
 		out.flush();	
 			
 		return json;
-	}
-
-	public void setUpDatabase(HttpServletRequest request, HttpServletResponse response){
-		try {
-			Connection con = ds.getConnection();
-			
-			try{
-				PreparedStatement extension = con.prepareStatement(new DataManager().installGisExtensions());
-				extension.executeUpdate();
-			}catch(Exception e){
-				//e.printStackTrace();
-			}
-			
-			try{
-				PreparedStatement statement = con.prepareStatement(new DataManager().initializeDatabase());
-				statement.executeUpdate();				
-			}catch (Exception e){
-				//e.printStackTrace();
-			}
-			
-			try{
-				DataLoader myParkLoader = new DataLoader();
-				ArrayList<ParkData> myParkData = myParkLoader.getAllParksData();
-				PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
-
-				for (int i=0; i<myParkData.size(); i++){
-					insertstatement.setString(1, myParkData.get(i).getName());
-					insertstatement.setString(2, "POINT(" + myParkData.get(i).getPos()[0] + " " + myParkData.get(i).getPos()[1] + ")");
-					insertstatement.executeUpdate();						
-				}
-			
-			}catch (Exception e){
-				e.printStackTrace();
-			}
-						
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 	}
 	
 	public String findParksWithin(HttpServletRequest request, HttpServletResponse response) throws IOException {

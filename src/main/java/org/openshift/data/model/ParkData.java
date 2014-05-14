@@ -1,4 +1,4 @@
-package org.openshift.model;
+package org.openshift.data.model;
 
 public class ParkData {
 
