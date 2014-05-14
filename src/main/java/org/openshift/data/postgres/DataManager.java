@@ -15,7 +15,7 @@ public class DataManager {
 	
 	public String seedDatabase(){
 		String insert = "INSERT into parkdata (name, the_geom) "
-					+ "VALUES (?, ST_GeomFromText('POINT(? ?)', 4326))";
+					+ "VALUES (?, ST_GeomFromText(?, 4326))";
 		return insert;
 	}
 

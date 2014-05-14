@@ -107,8 +107,7 @@ public class ParksServlet extends HttpServlet {
 				PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
 				
 				insertstatement.setString(1, "Guna");
-				insertstatement.setDouble(2, -85.7302);
-				insertstatement.setDouble(3, 37.5332);
+				insertstatement.setString(2, "POINT(" + -85.7302 + " " + 37.5332 + ")");
 				insertstatement.executeUpdate();				
 			}catch (Exception e){
 				e.printStackTrace();
