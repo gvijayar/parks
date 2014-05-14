@@ -69,8 +69,8 @@ public class ParksServlet extends HttpServlet {
 				HashMap<String, Object> holder = new HashMap<String, Object>();
 				
 				Float[] coordinates = new Float[2];
-				coordinates[0] = set.getFloat("lat");
-				coordinates[1] = set.getFloat("lon");
+				coordinates[0] = set.getFloat("lon");
+				coordinates[1] = set.getFloat("lat");
 				
 				holder.put("name", set.getString("name"));
 				holder.put("position", coordinates);
