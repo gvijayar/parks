@@ -1,4 +1,4 @@
-package org.openshift.webservice;
+package org.openshift.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,10 +40,6 @@ public class ParksServlet extends HttpServlet {
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {		
 		findParksWithin(request, response);
-	}
-	
-	public void getAllParks(HttpServletRequest request, HttpServletResponse response) {
-				
 	}
 	
 	public String findParksWithin(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -88,8 +84,6 @@ public class ParksServlet extends HttpServlet {
 		
 		Gson gson = new Gson(); 
 		String json = gson.toJson(allParksList); 
-	
-		System.out.println("JSON DATA: "+json);
 		
 		response.setContentType("application/json");  
 		PrintWriter out = response.getWriter();

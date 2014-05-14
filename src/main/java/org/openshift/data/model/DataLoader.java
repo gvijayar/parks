@@ -51,14 +51,12 @@ public class DataLoader {
 				extension = con.prepareStatement(new DataManager().installGisExtensions());
 				extension.executeUpdate();
 			}catch(Exception e){
-				//e.printStackTrace();
 			}
 			
 			try{
 				statement = con.prepareStatement(new DataManager().initializeDatabase());
 				statement.executeUpdate();				
 			}catch (Exception e){
-				//e.printStackTrace();
 			}
 			
 			try{
