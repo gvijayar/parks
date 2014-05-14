@@ -2,6 +2,9 @@ package org.openshift.webservice;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,14 +14,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openshift.data.mongo.DBConnection;
+import org.openshift.data.postgres.ConnectionManager;
+import org.openshift.data.postgres.DataManager;
 
 import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 
 @WebServlet("/parks")
 public class ParksServlet extends HttpServlet {
@@ -43,35 +42,8 @@ public class ParksServlet extends HttpServlet {
 		findParksWithin(request, response);
 	}
 	
-	public String getAllParks(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void getAllParks(HttpServletRequest request, HttpServletResponse response) {
 				
-		ArrayList<HashMap<String, Object>> allParksList = new ArrayList<HashMap<String, Object>>();
-		DB db = DBConnection.getInstance().getDB();
-		DBCollection parkListCollection = db.getCollection("parkpoints");
-		DBCursor cursor = parkListCollection.find();
-		try {
-			while (cursor.hasNext()) {
-				DBObject dataValue = cursor.next();
-				HashMap<String, Object> holder = new HashMap<String, Object>();
-				holder.put("name", dataValue.get("Name"));
-				holder.put("position", dataValue.get("pos"));
-				holder.put("id", dataValue.get("_id").toString());
-				allParksList.add(holder);
-
-			}			
-		} finally {
-			cursor.close();
-		}
-		
-		Gson gson = new Gson(); 
-		String json = gson.toJson(allParksList); 
-		
-		response.setContentType("application/json");  
-		PrintWriter out = response.getWriter();
-		out.print(json);
-		out.flush();	
-			
-		return json;
 	}
 	
 	public String findParksWithin(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -83,43 +55,41 @@ public class ParksServlet extends HttpServlet {
 		String lon2 = request.getParameter("lon2");
 		
 		ArrayList<HashMap<String, Object>> allParksList = new ArrayList<HashMap<String, Object>>();
-		DB db = DBConnection.getInstance().getDB();
-		DBCollection parkListCollection = db.getCollection("parkpoints");
-
-		// make the query object
-		BasicDBObject spatialQuery = new BasicDBObject();
-		ArrayList<ArrayList<Float>> posList = new ArrayList<ArrayList<Float>>();
-		ArrayList<Float> firstPair = new ArrayList<Float>();
-		ArrayList<Float> secondPair = new ArrayList<Float>();
-		firstPair.add(new Float(lon1));
-		firstPair.add(new Float(lat1));
-		secondPair.add(new Float(lon2));
-		secondPair.add(new Float(lat2));
-
-		posList.add(firstPair);
-		posList.add(secondPair);
-
-		BasicDBObject boxQuery = new BasicDBObject();
-		boxQuery.put("$box", posList);
-
-		spatialQuery.put("pos", new BasicDBObject("$within", boxQuery));
-
-		DBCursor cursor = parkListCollection.find(spatialQuery);
-		try {
-			while (cursor.hasNext()) {
-				DBObject dataValue = cursor.next();
+				
+		Connection con = null;
+		PreparedStatement queryStatement = null;
+		ResultSet set = null;
+		
+		try{
+			con = ConnectionManager.getConnection();
+			queryStatement = con.prepareStatement(new DataManager().getParkCoordinates(lon1, lat1, lon2, lat2));
+			set = queryStatement.executeQuery();
+			
+			while (set.next()){
 				HashMap<String, Object> holder = new HashMap<String, Object>();
-				holder.put("name", dataValue.get("Name"));
-				holder.put("position", dataValue.get("pos"));
-				holder.put("id", dataValue.get("_id").toString());
+				
+				Float[] coordinates = new Float[2];
+				coordinates[0] = set.getFloat("lat");
+				coordinates[1] = set.getFloat("lon");
+				
+				holder.put("name", set.getString("name"));
+				holder.put("position", coordinates);
+				holder.put("id", set.getString("gid"));
+				
 				allParksList.add(holder);
 			}
-		} finally {
-			cursor.close();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			ConnectionManager.closeConnection(con);
+			ConnectionManager.closeStatement(queryStatement);
 		}
-
+		
 		Gson gson = new Gson(); 
 		String json = gson.toJson(allParksList); 
+	
+		System.out.println("JSON DATA: "+json);
 		
 		response.setContentType("application/json");  
 		PrintWriter out = response.getWriter();

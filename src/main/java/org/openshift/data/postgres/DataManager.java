@@ -2,7 +2,7 @@ package org.openshift.data.postgres;
 
 public class DataManager {
 
-	public void getParkCoordinates(String lon1, String lat1, String lon2, String lat2){
+	public String getParkCoordinates(String lon1, String lat1, String lon2, String lat2){
 		
 		String query = "SELECT gid, "
 							+ "name, "
@@ -11,6 +11,7 @@ public class DataManager {
 					+ "FROM parkdata t "
 					+ "WHERE ST_Intersects( ST_MakeEnvelope("+ lon1 + ", " + lat1 + ", " + lon2 + ", "+lat2 + ", 4326), "
 							+ "t.the_geom) LIMIT 50";
+		return query;
 	}
 	
 	public String seedDatabase(){
