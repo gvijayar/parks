@@ -9,7 +9,7 @@ public class MongoBootstrapListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		DBConnection.initialize();		
+		//DBConnection.initialize();		
 	}
 
 	@Override
