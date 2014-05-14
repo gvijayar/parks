@@ -30,6 +30,8 @@ public class DataLoader {
 			 parkcoordinates.add(aParkData);
 		 }
 		 
+		 System.out.println("Found: "+parkcoordinates.size());
+		 
 		 return parkcoordinates;
 	}
 	
