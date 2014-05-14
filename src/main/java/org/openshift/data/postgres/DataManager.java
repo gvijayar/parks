@@ -10,7 +10,7 @@ public class DataManager {
 							+ "ST_Y(the_geom) as lat "
 					+ "FROM parkdata t "
 					+ "WHERE ST_Intersects( ST_MakeEnvelope("+ lon1 + ", " + lat1 + ", " + lon2 + ", "+lat2 + ", 4326), "
-							+ "t.the_geom) LIMIT 50";
+							+ "t.the_geom)";
 		return query;
 	}
 	

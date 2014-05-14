@@ -62,6 +62,8 @@ public class DataLoader {
 			}
 			
 			try{
+				deleteParksData(con);
+								
 				DataLoader myParkLoader = new DataLoader();
 				ArrayList<ParkData> myParkData = myParkLoader.getAllParksData();
 				PreparedStatement insertstatement = con.prepareStatement(new DataManager().seedDatabase());
@@ -81,5 +83,18 @@ public class DataLoader {
 			ConnectionManager.closeStatement(statement);
 			ConnectionManager.closeConnection(con);
 		}		
+	}
+	
+	private void deleteParksData(Connection con){
+		PreparedStatement delete = null;
+		try{
+			con = ConnectionManager.getConnection();
+			delete = con.prepareStatement("delete from parksdata");
+			delete.executeUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			ConnectionManager.closeStatement(delete);
+		}
 	}
 }
