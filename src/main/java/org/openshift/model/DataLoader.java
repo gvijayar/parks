@@ -29,9 +29,7 @@ public class DataLoader {
 			 ParkData aParkData = myGson.fromJson(park, ParkData.class);
 			 parkcoordinates.add(aParkData);
 		 }
-		 
-		 System.out.println("Found: "+parkcoordinates.size());
-		 
+		 		 
 		 return parkcoordinates;
 	}
 	
