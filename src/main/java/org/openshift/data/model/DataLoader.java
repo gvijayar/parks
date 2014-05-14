@@ -87,7 +87,7 @@ public class DataLoader {
 		PreparedStatement delete = null;
 		try{
 			con = ConnectionManager.getConnection();
-			delete = con.prepareStatement("delete from parksdata");
+			delete = con.prepareStatement("delete from parkdata");
 			delete.executeUpdate();
 		}catch(Exception e){
 			e.printStackTrace();
